@@ -20,14 +20,64 @@ namespace DepoOOP
 
     class Train
     {
-        protected List<Van> Vans = new List<Van>();
+        private List<Van> _vans = new List<Van>();
+        private static Random _random = new Random();
 
         public Train (int passengers)
         {
             Passengers = passengers;
+
         }
 
         public int Passengers { get; private set; }
+
+        public void CreateNew()
+        {
+            _vans = CreateVans();
+            ShowVans();
+
+            while (Passengers>0)
+            {
+                Console.WriteLine($"Разместите {Passengers} по вогонам выбрав доступный из списка.");
+
+            }
+
+        }
+          
+        private List<Van> CreateVans ()
+        {
+            int randomIndex;
+            int minimumNumberSeats = 40;
+            int maximumNumberSeats = 201;
+            List<Van > vans = new List<Van>();
+            string[] name = new string[] { "Купе", "Плацкарт", "Сидачие", "2х этажный плацкарт" };
+
+            for (int i = 0; i<name.Length; i++)
+            {
+                randomIndex = _random.Next(minimumNumberSeats,maximumNumberSeats);
+                vans.Add(new Van(name[i],randomIndex));
+            }
+
+            return vans;
+        }
+
+        private void ShowVans()
+        {
+            int sequenceNumber;
+
+            Console.WriteLine("Доступные вагоны:");
+
+            for (int i = 0; i < _vans.Count; i++)
+            {
+                sequenceNumber = i + 1;
+
+                Console.Write($"{sequenceNumber}) ");
+
+                _vans[i].ShowInfo();
+            }
+
+            Console.WriteLine();
+        }
     }
 
      class Van
@@ -47,14 +97,6 @@ namespace DepoOOP
         }
     }
 
-    class Itinerary
-    {
-        public Itinerary(string name, int seating)
-        {
-            Name = name;
-            Seating = seating;
-        }
-    }
 
     class Utilite
     {
