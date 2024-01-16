@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace DepoOOP
 {
@@ -15,6 +16,18 @@ namespace DepoOOP
     class ControlRoom
     {
         protected List<Van> Vans = new List<Van>();
+    }
+
+    class Train
+    {
+        protected List<Van> Vans = new List<Van>();
+
+        public Train (int passengers)
+        {
+            Passengers = passengers;
+        }
+
+        public int Passengers { get; private set; }
     }
 
      class Van
@@ -34,18 +47,13 @@ namespace DepoOOP
         }
     }
 
-    class Train
+    class Itinerary
     {
-        protected List<Van> Vans = new List<Van>();
-
-        public Train (int passengers)
+        public Itinerary(string name, int seating)
         {
-            Passengers = passengers;
+            Name = name;
+            Seating = seating;
         }
-
-        public int Passengers { get; private set; }
-
-
     }
 
     class Utilite
