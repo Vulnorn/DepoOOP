@@ -23,7 +23,7 @@ namespace DepoOOP
         private List<Van> _vans = new List<Van>();
         private static Random _random = new Random();
 
-        public Train (int passengers)
+        public Train(int passengers)
         {
             Passengers = passengers;
 
@@ -36,14 +36,50 @@ namespace DepoOOP
             _vans = CreateVans();
             ShowVans();
 
-            while (Passengers>0)
+            while (Passengers > 0)
             {
                 Console.WriteLine($"Разместите {Passengers} по вогонам выбрав доступный из списка.");
 
             }
 
         }
-          
+
+        private void Complete()
+        {
+            if (TryGetVan() == false)
+                Console.WriteLine("Не было добавлено вагона");
+            else
+                Console.WriteLine("Вы добавили новый вагон");
+
+            Console.ReadKey();
+        }
+
+        private bool TryGetVan()
+        {
+            Console.WriteLine("Введите номер вагона для добавления его к поезду");
+
+            if (GetNumberVan(out int numberVan) == false)
+                return false;
+
+            AccommodatePassengers(numberVan);
+
+            return true;
+        }
+
+        private void AccommodatePassengers(int numberVan )
+        {
+            _vans[numberVan].
+        }
+
+        private bool GetNumberVan(out int numberVan)
+        {
+            if (Utilite.TryGetPositiveNumber(out numberVan) == false)
+                return false;
+
+            numberVan--;
+            return true;
+        }
+
         private List<Van> CreateVans ()
         {
             int randomIndex;
