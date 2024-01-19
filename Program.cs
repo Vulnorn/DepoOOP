@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace DepoOOP
 {
@@ -119,12 +117,11 @@ namespace DepoOOP
             Console.ReadKey();
         }
 
-        private  bool TryGetTrain()
+        private bool TryGetTrain()
         {
             _train.CreateNew();
             return DepartureExpected = false;
         }
-
 
         private void Exit()
         {
@@ -157,7 +154,7 @@ namespace DepoOOP
             }
 
             Console.WriteLine("Поезд укомплектован и отправлен по текущему направлению");
-            Console.Clear();
+            Console.ReadKey();
         }
 
         private void Complete()
@@ -217,7 +214,6 @@ namespace DepoOOP
         private void ShowVans()
         {
             int sequenceNumber;
-
             Console.WriteLine("Доступные вагоны:");
 
             for (int i = 0; i < _vans.Count; i++)
@@ -249,7 +245,6 @@ namespace DepoOOP
             Console.WriteLine($"Вагон {Name}, имеет {Seating} посадочных мест");
         }
     }
-
 
     class Utilite
     {
