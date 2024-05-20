@@ -17,6 +17,7 @@ namespace DepoOOP
     {
         private Train _train;
         private static Random _random = new Random();
+
         public ControlRoom()
         {
             IsWork = true;
@@ -256,9 +257,9 @@ namespace DepoOOP
             {
                 userInput = Console.ReadLine();
             }
-            while (GetInputValue(userInput, out numder));
+            while (TryGetInputValue(userInput, out numder));
 
-            if (GetNumberRange(numder))
+            if (TryGetNumberRange(numder))
             {
                 Console.WriteLine("Хорошая попытка.");
                 return false;
@@ -267,7 +268,7 @@ namespace DepoOOP
             return true;
         }
 
-        private static bool GetInputValue(string input, out int number)
+        private static bool TryGetInputValue(string input, out int number)
         {
             if (int.TryParse(input, out number) == false)
             {
@@ -278,7 +279,7 @@ namespace DepoOOP
             return false;
         }
 
-        private static bool GetNumberRange(int number)
+        private static bool TryGetNumberRange(int number)
         {
             int positiveValue = 0;
 
