@@ -15,65 +15,60 @@ namespace DepoOOP
 
     class ControlRoom
     {
+        private static Random s_random = new Random();
+
         private Train _train;
-        private static Random _random = new Random();
+        private bool _isReadyToDeparture;
 
         public ControlRoom()
         {
-            IsWork = true;
-            DepartureExpected = false;
+            _isReadyToDeparture = false;
         }
-
-        public bool IsWork { get; private set; }
-        public bool DepartureExpected { get; private set; }
 
         public void Work()
         {
-            while (IsWork)
+            const string CommandCreateDirection = "1";
+            const string CommandSendTrain = "2";
+            const string CommandExit = "3";
+
+            bool isWork = true;
+
+            while (isWork)
             {
-                ShowMenu();
-            }
-        }
+                Console.Clear();
+                Console.WriteLine("Добро пожаловать");
+                Console.WriteLine($"Выберите пункт в меню:");
+                Console.WriteLine($"{CommandCreateDirection} - Создать направление");
+                Console.WriteLine($"{CommandSendTrain} - Отправить поезд");
+                Console.WriteLine($"{CommandExit} - Выход");
 
-        private void ShowMenu()
-        {
-            const string CreateDirectionMenu = "1";
-            const string SendTrainMenu = "2";
-            const string ExitMenu = "3";
+                string userInput = Console.ReadLine();
 
-            Console.Clear();
-            Console.WriteLine("Добро пожаловать");
-            Console.WriteLine($"Выберите пункт в меню:");
-            Console.WriteLine($"{CreateDirectionMenu} - Создать направление");
-            Console.WriteLine($"{SendTrainMenu} - Отправить поезд");
-            Console.WriteLine($"{ExitMenu} - Выход");
+                switch (userInput)
+                {
+                    case CommandCreateDirection:
+                        CreateDirection();
+                        break;
 
-            string userInput = Console.ReadLine();
+                    case CommandSendTrain:
+                        SendTrain();
+                        break;
 
-            switch (userInput)
-            {
-                case CreateDirectionMenu:
-                    CreateDirection();
-                    break;
+                    case CommandExit:
+                        isWork = false;
+                        break;
 
-                case SendTrainMenu:
-                    SendTrain();
-                    break;
-
-                case ExitMenu:
-                    Exit();
-                    break;
-
-                default:
-                    Console.WriteLine("Ошибка ввода команды.");
-                    Console.ReadKey();
-                    break;
+                    default:
+                        Console.WriteLine("Ошибка ввода команды.");
+                        Console.ReadKey();
+                        break;
+                }
             }
         }
 
         private void CreateDirection()
         {
-            if (DepartureExpected == true)
+            if (_isReadyToDeparture == true)
             {
                 Console.WriteLine("Направление создано ожидается отправка поезда");
             }
@@ -96,37 +91,27 @@ namespace DepoOOP
             Console.WriteLine("Введите пункт прибытия");
             string arrivaPoint = Console.ReadLine();
 
-            int passengers = _random.Next(lowerLimitRandom, upperLimitRandom);
+            int passengers = s_random.Next(lowerLimitRandom, upperLimitRandom);
             _train = new Train(passengers);
 
             Console.WriteLine($"Вы создали направление {departurePoint} - {arrivaPoint} ожидается поезд на {passengers} пассажиров");
 
-            return DepartureExpected = true;
+            return _isReadyToDeparture = true;
         }
 
         private void SendTrain()
         {
-            if (DepartureExpected == false)
+            if (_isReadyToDeparture == false)
             {
                 Console.WriteLine("Нет поезда для отправки.");
             }
             else
             {
-                TryGetTrain();
+                _train.CreateNew();
+                _isReadyToDeparture = false;
             }
 
             Console.ReadKey();
-        }
-
-        private bool TryGetTrain()
-        {
-            _train.CreateNew();
-            return DepartureExpected = false;
-        }
-
-        private void Exit()
-        {
-            IsWork = false;
         }
     }
 
@@ -188,9 +173,8 @@ namespace DepoOOP
 
         private bool GetNumberVan(out int numberVan)
         {
-            if (Utilite.TryGetPositiveNumber(out numberVan) == false)
-                return false;
-
+            int lowerLimit = 0;
+            numberVan = Utilite.GetNumberInRange(lowerLimit);
             numberVan--;
             return true;
         }
@@ -249,44 +233,41 @@ namespace DepoOOP
 
     class Utilite
     {
-        public static bool TryGetPositiveNumber(out int numder)
+        public static int GetNumberInRange(int lowerLimitRangeNumbers = Int32.MinValue, int upperLimitRangeNumbers = Int32.MaxValue)
         {
+            bool isEnterNumber = true;
+            int enterNumber = 0;
             string userInput;
 
-            do
+            while (isEnterNumber)
             {
-                userInput = Console.ReadLine();
-            }
-            while (TryGetInputValue(userInput, out numder));
+                Console.WriteLine($"Введите число.");
 
-            if (TryGetNumberRange(numder))
+                userInput = Console.ReadLine();
+
+                if (int.TryParse(userInput, out enterNumber) == false)
+                    Console.WriteLine("Не корректный ввод.");
+                else if (VerifyForAcceptableNumber(enterNumber, lowerLimitRangeNumbers, upperLimitRangeNumbers))
+                    isEnterNumber = false;
+            }
+
+            return enterNumber;
+        }
+
+        private static bool VerifyForAcceptableNumber(int number, int lowerLimitRangeNumbers, int upperLimitRangeNumbers)
+        {
+            if (number < lowerLimitRangeNumbers)
             {
-                Console.WriteLine("Хорошая попытка.");
+                Console.WriteLine($"Число вышло за нижний предел допустимого значения.");
+                return false;
+            }
+            else if (number > upperLimitRangeNumbers)
+            {
+                Console.WriteLine($"Число вышло за верхний предел допустимого значения.");
                 return false;
             }
 
             return true;
-        }
-
-        private static bool TryGetInputValue(string input, out int number)
-        {
-            if (int.TryParse(input, out number) == false)
-            {
-                Console.WriteLine("Не корректный ввод.");
-                return true;
-            }
-
-            return false;
-        }
-
-        private static bool TryGetNumberRange(int number)
-        {
-            int positiveValue = 0;
-
-            if (number < positiveValue)
-                return true;
-
-            return false;
         }
     }
 }
