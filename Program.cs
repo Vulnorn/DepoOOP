@@ -15,8 +15,6 @@ namespace DepoOOP
 
     class ControlRoom
     {
-        private static Random s_random = new Random();
-
         private Train _train;
         private bool _isReadyToDeparture;
 
@@ -91,7 +89,7 @@ namespace DepoOOP
             Console.WriteLine("Введите пункт прибытия");
             string arrivaPoint = Console.ReadLine();
 
-            int passengers = s_random.Next(lowerLimitRandom, upperLimitRandom);
+            int passengers = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
             _train = new Train(passengers);
 
             Console.WriteLine($"Вы создали направление {departurePoint} - {arrivaPoint} ожидается поезд на {passengers} пассажиров");
@@ -107,7 +105,7 @@ namespace DepoOOP
             }
             else
             {
-                _train.CreateNew();
+                _train.Create();
                 _isReadyToDeparture = false;
             }
 
@@ -118,7 +116,6 @@ namespace DepoOOP
     class Train
     {
         private List<Van> _vans = new List<Van>();
-        private static Random _random = new Random();
 
         public Train(int passengers)
         {
@@ -127,7 +124,7 @@ namespace DepoOOP
 
         public int Passengers { get; private set; }
 
-        public void CreateNew()
+        public void Create()
         {
             _vans = CreateVans();
             ShowVans();
@@ -165,7 +162,7 @@ namespace DepoOOP
 
         private void AccommodatePassengers(int numberVan)
         {
-            Passengers = Passengers - _vans[numberVan].Seating;
+            Passengers = Passengers - _vans[numberVan].SeatsCount;
 
             if (Passengers < 0)
                 Passengers = 0;
@@ -189,7 +186,7 @@ namespace DepoOOP
 
             for (int i = 0; i < name.Length; i++)
             {
-                randomIndex = _random.Next(minimumNumberSeats, maximumNumberSeats);
+                randomIndex = Utilite.GenerateRandomNumber(minimumNumberSeats, maximumNumberSeats);
                 vans.Add(new Van(name[i], randomIndex));
             }
 
@@ -219,20 +216,28 @@ namespace DepoOOP
         public Van(string name, int seating)
         {
             Name = name;
-            Seating = seating;
+            SeatsCount = seating;
         }
 
         public string Name { get; private set; }
-        public int Seating { get; private set; }
+        public int SeatsCount { get; private set; }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Вагон {Name}, имеет {Seating} посадочных мест");
+            Console.WriteLine($"Вагон {Name}, имеет {SeatsCount} посадочных мест");
         }
     }
 
     class Utilite
     {
+        public static Random s_random = new Random();
+
+        public static int GenerateRandomNumber(int lowerLimitRangeRandom, int  upperLimitRangeRandom)
+        {
+           int numberRandom = s_random.Next(lowerLimitRangeRandom, upperLimitRangeRandom);
+            return numberRandom;
+        }
+
         public static int GetNumberInRange(int lowerLimitRangeNumbers = Int32.MinValue, int upperLimitRangeNumbers = Int32.MaxValue)
         {
             bool isEnterNumber = true;
