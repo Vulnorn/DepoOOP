@@ -133,7 +133,6 @@ namespace DepoOOP
             {
                 Console.WriteLine($"Разместите {Passengers} по вогонам выбрав доступный из списка.");
                 Complete();
-
             }
 
             Console.WriteLine("Поезд укомплектован и отправлен по текущему направлению");
