@@ -67,13 +67,9 @@ namespace DepoOOP
         private void CreateDirection()
         {
             if (_isReadyToDeparture == true)
-            {
                 Console.WriteLine("Направление создано ожидается отправка поезда");
-            }
             else
-            {
                 TryGetDirectioin();
-            }
 
             Console.ReadKey();
         }
@@ -90,9 +86,9 @@ namespace DepoOOP
             string arrivaPoint = Console.ReadLine();
 
             int passengers = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
-            _train = new Train(passengers);
+            _train = new Train(passengers, departurePoint, arrivaPoint);
 
-            Console.WriteLine($"Вы создали направление {departurePoint} - {arrivaPoint} ожидается поезд на {passengers} пассажиров");
+            Console.WriteLine($"Вы создали направление {_train.DeparturePoint} - {_train.ArrivaPoint} ожидается поезд на {_train.Passengers} пассажиров");
 
             return _isReadyToDeparture = true;
         }
@@ -117,12 +113,16 @@ namespace DepoOOP
     {
         private List<Van> _vans = new List<Van>();
 
-        public Train(int passengers)
+        public Train(int passengers, string departurePoint, string arrivaPoint)
         {
             Passengers = passengers;
+            DeparturePoint = departurePoint;
+            ArrivaPoint = arrivaPoint;
         }
 
         public int Passengers { get; private set; }
+        public string DeparturePoint { get; private set; }
+        public string ArrivaPoint { get; private set; }
 
         public void Create()
         {
@@ -232,9 +232,9 @@ namespace DepoOOP
     {
         public static Random s_random = new Random();
 
-        public static int GenerateRandomNumber(int lowerLimitRangeRandom, int  upperLimitRangeRandom)
+        public static int GenerateRandomNumber(int lowerLimitRangeRandom, int upperLimitRangeRandom)
         {
-           int numberRandom = s_random.Next(lowerLimitRangeRandom, upperLimitRangeRandom);
+            int numberRandom = s_random.Next(lowerLimitRangeRandom, upperLimitRangeRandom);
             return numberRandom;
         }
 
