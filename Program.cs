@@ -16,6 +16,9 @@ namespace DepoOOP
     class ControlRoom
     {
         private Train _train;
+
+        private List<Train> _schedule = new List<Train>();
+
         private bool _isReadyToDeparture;
 
         public ControlRoom()
@@ -38,7 +41,9 @@ namespace DepoOOP
                 Console.WriteLine($"Выберите пункт в меню:");
                 Console.WriteLine($"{CommandCreateDirection} - Создать направление");
                 Console.WriteLine($"{CommandSendTrain} - Отправить поезд");
-                Console.WriteLine($"{CommandExit} - Выход");
+                Console.WriteLine($"{CommandExit} - Выход\n\n");
+
+                ShoySchedule();
 
                 string userInput = Console.ReadLine();
 
@@ -78,12 +83,21 @@ namespace DepoOOP
         {
             int lowerLimitRandom = 300;
             int upperLimitRandom = 1000;
+            string departurePoint;
+            string arrivaPoint;
             Console.Clear();
-            Console.WriteLine("Введите пункт отправление");
-            string departurePoint = Console.ReadLine();
 
-            Console.WriteLine("Введите пункт прибытия");
-            string arrivaPoint = Console.ReadLine();
+            do
+            {
+                Console.WriteLine("Введите пункт отправление");
+                departurePoint = Console.ReadLine();
+
+                Console.WriteLine("Введите пункт прибытия");
+                arrivaPoint = Console.ReadLine();
+
+                Console.WriteLine($"Пункты не должны совподать");
+            }
+            while (departurePoint == arrivaPoint);
 
             int passengers = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
             _train = new Train(passengers, departurePoint, arrivaPoint);
@@ -103,9 +117,18 @@ namespace DepoOOP
             {
                 _train.Create();
                 _isReadyToDeparture = false;
+                _schedule.Add(_train);
             }
 
             Console.ReadKey();
+        }
+
+        private void ShoySchedule()
+        {
+            for (int i = 0; i < _schedule.Count; i++)
+            {
+                Console.WriteLine($"От {_schedule[i].DeparturePoint} Куда {_schedule[i].ArrivaPoint} Количество пассажиров - {_schedule[i].Passengers}");
+            }
         }
     }
 
@@ -150,37 +173,38 @@ namespace DepoOOP
         private bool TryGetVan()
         {
             Console.WriteLine("Введите номер вагона для добавления его к поезду");
+            int numberVan = GetNumberVan();
 
-            if (GetNumberVan(out int numberVan) == false)
+            if (_vans.Count < numberVan)
                 return false;
 
             AccommodatePassengers(numberVan);
-
             return true;
         }
 
         private void AccommodatePassengers(int numberVan)
         {
+            numberVan--;
             Passengers = Passengers - _vans[numberVan].SeatsCount;
 
             if (Passengers < 0)
                 Passengers = 0;
         }
 
-        private bool GetNumberVan(out int numberVan)
+        private int GetNumberVan()
         {
             int lowerLimit = 0;
-            numberVan = Utilite.GetNumberInRange(lowerLimit);
-            numberVan--;
-            return true;
+            int numberVan = Utilite.GetNumberInRange(lowerLimit);
+            return numberVan;
         }
 
         private List<Van> CreateVans()
         {
+            List<Van> vans = new List<Van>();
+
             int randomIndex;
             int minimumNumberSeats = 40;
             int maximumNumberSeats = 201;
-            List<Van> vans = new List<Van>();
             string[] name = new string[] { "Купе", "Плацкарт", "Сидачие", "2х этажный плацкарт" };
 
             for (int i = 0; i < name.Length; i++)
