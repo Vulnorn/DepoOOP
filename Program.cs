@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace DepoOOP
 {
@@ -7,21 +8,19 @@ namespace DepoOOP
     {
         static void Main(string[] args)
         {
-            ControlRoom ControlRoom = new ControlRoom();
+            Dispatcher ControlRoom = new Dispatcher();
 
             ControlRoom.Work();
         }
     }
 
-    class ControlRoom
+    class Dispatcher
     {
-        private Train _train;
-
-        private List<Train> _schedule = new List<Train>();
+        private List<Train> _train = new List<Train>();
 
         private bool _isReadyToDeparture;
 
-        public ControlRoom()
+        public Dispatcher()
         {
             _isReadyToDeparture = false;
         }
@@ -87,17 +86,7 @@ namespace DepoOOP
             string arrivaPoint;
             Console.Clear();
 
-            do
-            {
-                Console.WriteLine("Введите пункт отправление");
-                departurePoint = Console.ReadLine();
-
-                Console.WriteLine("Введите пункт прибытия");
-                arrivaPoint = Console.ReadLine();
-
-                Console.WriteLine($"Пункты не должны совподать");
-            }
-            while (departurePoint == arrivaPoint);
+          
 
             int passengers = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
             _train = new Train(passengers, departurePoint, arrivaPoint);
@@ -132,63 +121,68 @@ namespace DepoOOP
         }
     }
 
-    class Train
+    
+
+   class TrainFactory
     {
+        private VanFactory _vanFactory = new VanFactory();
+
         private List<Van> _vans = new List<Van>();
 
-        public Train(int passengers, string departurePoint, string arrivaPoint)
+        private int _passengers;
+        private int _numberVan;
+
+        public TrainFactory(int passengers)
         {
-            Passengers = passengers;
-            DeparturePoint = departurePoint;
-            ArrivaPoint = arrivaPoint;
+            _passengers = passengers;
+            Create();
         }
 
-        public int Passengers { get; private set; }
-        public string DeparturePoint { get; private set; }
-        public string ArrivaPoint { get; private set; }
-
-        public void Create()
+        private void Create()
         {
-            _vans = CreateVans();
-            ShowVans();
-
-            while (Passengers > 0)
+            while (_passengers > 0)
             {
-                Console.WriteLine($"Разместите {Passengers} по вогонам выбрав доступный из списка.");
+                Console.WriteLine($"Разместите {_passengers} по вогонам выбрав доступный из списка.");
                 Complete();
             }
 
-            Console.WriteLine("Поезд укомплектован и отправлен по текущему направлению");
+            Console.WriteLine("Поезд укомплектован");
             Console.ReadKey();
+            
         }
 
         private void Complete()
         {
             if (TryGetVan() == false)
+            {
                 Console.WriteLine("Не было добавлено вагона");
+            }
             else
+            {
                 Console.WriteLine("Вы добавили новый вагон");
+                
+            }
         }
 
         private bool TryGetVan()
         {
             Console.WriteLine("Введите номер вагона для добавления его к поезду");
-            int numberVan = GetNumberVan();
+            _numberVan = GetNumberVan();
 
-            if (_vans.Count < numberVan)
+            if (_vanFactory.Vans.Count < _numberVan)
                 return false;
 
-            AccommodatePassengers(numberVan);
+            AccommodatePassengers();
             return true;
         }
 
-        private void AccommodatePassengers(int numberVan)
+        private void AccommodatePassengers()
         {
-            numberVan--;
-            Passengers = Passengers - _vans[numberVan].SeatsCount;
+            _numberVan--;
+            _passengers = _passengers - _vanFactory.Vans[_numberVan].SeatsCount;
 
-            if (Passengers < 0)
-                Passengers = 0;
+            if (_passengers < 0)
+                _passengers = 0;
         }
 
         private int GetNumberVan()
@@ -197,11 +191,37 @@ namespace DepoOOP
             int numberVan = Utilite.GetNumberInRange(lowerLimit);
             return numberVan;
         }
+    }
 
-        private List<Van> CreateVans()
+    class VanFactory
+    {
+        public VanFactory() 
         {
-            List<Van> vans = new List<Van>();
+            Create(Vans);
+            Show();
+        } 
 
+        public List<Van> Vans {  get; private set; } 
+
+        private void Show()
+        {
+            int sequenceNumber;
+            Console.WriteLine("Доступные вагоны:");
+
+            for (int i = 0; i < Vans.Count; i++)
+            {
+                sequenceNumber = i + 1;
+
+                Console.Write($"{sequenceNumber}) ");
+
+                Vans[i].ShowInfo();
+            }
+
+            Console.WriteLine();
+        }
+
+        private List<Van> Create(List<Van> vans)
+        {
             int randomIndex;
             int minimumNumberSeats = 40;
             int maximumNumberSeats = 201;
@@ -215,24 +235,43 @@ namespace DepoOOP
 
             return vans;
         }
+    }
 
-        private void ShowVans()
+    class DirectionFactory
+    {
+        private Direction Create ()
         {
-            int sequenceNumber;
-            Console.WriteLine("Доступные вагоны:");
+            string departurePoint;
+            string arrivaPoint;
 
-            for (int i = 0; i < _vans.Count; i++)
+            do
             {
-                sequenceNumber = i + 1;
+                Console.Clear();
+                Console.WriteLine("Введите пункт отправление");
+               departurePoint = Console.ReadLine();
 
-                Console.Write($"{sequenceNumber}) ");
+                Console.WriteLine("Введите пункт прибытия");
+               arrivaPoint = Console.ReadLine();
 
-                _vans[i].ShowInfo();
+                Console.WriteLine($"Пункты не должны совподать");
             }
+            while (departurePoint == arrivaPoint);
 
-            Console.WriteLine();
+            return new Direction(departurePoint, arrivaPoint);
         }
     }
+
+    class Direction
+    {
+        public  Direction(string departure, string arrival)
+        {
+            Departure = departure;
+            Arrival = arrival;
+        }
+
+        public string Departure { get; private set; }
+        public string Arrival { get; private set; }
+}
 
     class Van
     {
@@ -251,9 +290,32 @@ namespace DepoOOP
         }
     }
 
+    class Train
+    {
+        public Train(Direction direction, string name, int passengers, List<Van> vans)
+        {
+            Passengers = passengers;
+            Name = name;
+            Direction = direction;
+            Vans= vans;
+        }
+
+        public Direction Direction { get; private set; }
+
+        public List<Van> Vans { get; private set; }
+
+        public int Passengers { get; private set; }
+        public string Name { get; private set; }  
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"");
+        }
+    }
+
     class Utilite
     {
-        public static Random s_random = new Random();
+        private static Random s_random = new Random();
 
         public static int GenerateRandomNumber(int lowerLimitRangeRandom, int upperLimitRangeRandom)
         {
