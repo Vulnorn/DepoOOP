@@ -17,6 +17,8 @@ namespace DepoOOP
     class Dispatcher
     {
         Direction Direction;
+        DirectionFactory DirectionFactory;
+        TrainFactory TrainFactory;
 
         private List<Train> _trains = new List<Train>();
 
@@ -129,13 +131,17 @@ namespace DepoOOP
 
     class TrainFactory
     {
-        public static Train Create(int tickets, Direction direction)
+        VanFactory VanFactory;
+
+        public  Train Create(int tickets, Direction direction)
         {
             List<Van> vans = VanFactory.Create();
             List<Van> composition = new List<Van>();
 
             int allPassenger = tickets;
             Console.WriteLine($"Разместите {allPassenger} по вогонам выбрав доступный из списка.");
+            
+            ShowVans(vans);
 
             while (allPassenger != 0)
             {
@@ -148,7 +154,7 @@ namespace DepoOOP
             return new Train(direction, tickets, composition);
         }
 
-        private static void GetVan(List<Van> vans, List<Van> structure)
+        private  void GetVan(List<Van> vans, List<Van> structure)
         {
             int upperLimit = vans.Count;
             int lowerLimit = 0;
@@ -160,7 +166,7 @@ namespace DepoOOP
             Console.WriteLine("Вы добавили новый вагон");
         }
 
-        private static int AccommodatePassengers(List<Van> structure, int allPassengers)
+        private  int AccommodatePassengers(List<Van> structure, int allPassengers)
         {
             int passengers = 0;
 
@@ -174,32 +180,8 @@ namespace DepoOOP
 
             return allPassengers;
         }
-    }
 
-    class VanFactory
-    {
-        public static List<Van> Create()
-        {
-            List<Van> vans = new List<Van>();
-
-            int randomIndex;
-            int minimumNumberSeats = 40;
-            int maximumNumberSeats = 201;
-
-            string[] name = new string[] { "Купе", "Плацкарт", "Сидачие", "2х этажный плацкарт" };
-
-            for (int i = 0; i < name.Length; i++)
-            {
-                randomIndex = Utilite.GenerateRandomNumber(minimumNumberSeats, maximumNumberSeats);
-                vans.Add(new Van(name[i], randomIndex));
-            }
-
-            Show(vans);
-
-            return vans;
-        }
-
-        private static void Show(List<Van> vans)
+        private void ShowVans(List<Van> vans)
         {
             int sequenceNumber;
             Console.WriteLine("Доступные вагоны:");
@@ -217,9 +199,31 @@ namespace DepoOOP
         }
     }
 
+    class VanFactory
+    {
+        public  List<Van> Create()
+        {
+            List<Van> vans = new List<Van>();
+
+            int randomIndex;
+            int minimumNumberSeats = 40;
+            int maximumNumberSeats = 201;
+
+            string[] name = new string[] { "Купе", "Плацкарт", "Сидачие", "2х этажный плацкарт" };
+
+            for (int i = 0; i < name.Length; i++)
+            {
+                randomIndex = Utilite.GenerateRandomNumber(minimumNumberSeats, maximumNumberSeats);
+                vans.Add(new Van(name[i], randomIndex));
+            }
+
+            return vans;
+        }
+    }
+
     class DirectionFactory
     {
-        public static Direction Create()
+        public Direction Create()
         {
             string departurePoint;
             string arrivaPoint;
@@ -272,23 +276,18 @@ namespace DepoOOP
 
     class Train
     {
+        private List<Van> _vans ;
+
         public Train(Direction direction, int passengers, List<Van> vans)
         {
             Passengers = passengers;
             Direction = direction;
-            Vans = vans;
+            _vans = vans;
         }
 
         public Direction Direction { get; private set; }
 
-        public List<Van> Vans { get; private set; }
-
         public int Passengers { get; private set; }
-
-        public void ShowInfo()
-        {
-            Console.WriteLine($"");
-        }
     }
 
     class Utilite
