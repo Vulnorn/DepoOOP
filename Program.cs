@@ -8,9 +8,9 @@ namespace DepoOOP
     {
         static void Main(string[] args)
         {
-            Dispatcher ControlRoom = new Dispatcher();
+            Dispatcher Dispatcher = new Dispatcher();
 
-            ControlRoom.Work();
+            Dispatcher.Work();
         }
     }
 
