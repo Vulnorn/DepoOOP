@@ -17,8 +17,8 @@ namespace DepoOOP
     class Dispatcher
     {
         private Direction _direction;
-        private DirectionFactory _directionFactory;
-        private TrainFactory _trainFactory;
+        private DirectionFactory _directionFactory = new DirectionFactory();
+        private TrainFactory _trainFactory = new TrainFactory();
 
         private List<Train> _trains = new List<Train>();
 
