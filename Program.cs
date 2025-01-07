@@ -110,6 +110,7 @@ namespace DepoOOP
 
             Console.WriteLine("Поезд укомплектован");
             Console.ReadKey();
+
             return new Train(direction, tickets, composition);
         }
 
