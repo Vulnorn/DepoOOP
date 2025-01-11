@@ -104,7 +104,7 @@ namespace DepoOOP
 
             while (allPassenger != 0)
             {
-                GetVan(vans, composition);
+                AddVan(vans, composition);
                 allPassenger = AccommodatePassengers(composition, allPassenger);
             }
 
@@ -114,7 +114,7 @@ namespace DepoOOP
             return new Train(direction, tickets, composition);
         }
 
-        private void GetVan(List<Van> vans, List<Van> structure)
+        private void AddVan(List<Van> vans, List<Van> structure)
         {
             int upperLimit = vans.Count;
             int lowerLimit = 0;
@@ -274,14 +274,14 @@ namespace DepoOOP
 
                 if (int.TryParse(userInput, out enterNumber) == false)
                     Console.WriteLine("Не корректный ввод.");
-                else if (VerifyForAcceptableNumber(enterNumber, lowerLimitRangeNumbers, upperLimitRangeNumbers))
+                else if (IsGoBeyondLimit(enterNumber, lowerLimitRangeNumbers, upperLimitRangeNumbers))
                     isEnterNumber = false;
             }
 
             return enterNumber;
         }
 
-        private static bool VerifyForAcceptableNumber(int number, int lowerLimitRangeNumbers, int upperLimitRangeNumbers)
+        private static bool IsGoBeyondLimit(int number, int lowerLimitRangeNumbers, int upperLimitRangeNumbers)
         {
             if (number < lowerLimitRangeNumbers)
             {
