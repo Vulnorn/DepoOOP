@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace DepoOOP
 {
@@ -16,13 +15,10 @@ namespace DepoOOP
 
     class Dispatcher
     {
-        private Direction _direction;
         private DirectionFactory _directionFactory = new DirectionFactory();
         private TrainFactory _trainFactory = new TrainFactory();
 
         private List<Train> _trains = new List<Train>();
-
-        private int _tickets;
 
         public void Work()
         {
@@ -61,22 +57,23 @@ namespace DepoOOP
             }
         }
 
-        private void SellTickets()
+        private void CreateTrain()
+        {
+            Direction direction = _directionFactory.Create();
+
+            int tickets = SellTickets();
+
+            _trains.Add(_trainFactory.Create(tickets, direction));
+        }
+
+        private int SellTickets()
         {
             int lowerLimitRandom = 300;
             int upperLimitRandom = 1000;
-            _tickets = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
+            int tickets = Utilite.GenerateRandomNumber(lowerLimitRandom, upperLimitRandom);
 
-            Console.WriteLine($"На это направление было продано {_tickets}.");
-        }
-
-        private void CreateTrain()
-        {
-            _direction = _directionFactory.Create();
-
-            SellTickets();
-
-            _trains.Add(_trainFactory.Create(_tickets, _direction));
+            Console.WriteLine($"На это направление было продано {tickets}.");
+            return tickets;
         }
 
         private void ShoySchedule()
@@ -90,7 +87,7 @@ namespace DepoOOP
 
     class TrainFactory
     {
-        private VanFactory _vanFactory;
+        private VanFactory _vanFactory = new VanFactory();
 
         public Train Create(int tickets, Direction direction)
         {
@@ -122,7 +119,7 @@ namespace DepoOOP
             Console.WriteLine("Введите номер вагона для добавления его к поезду");
             int numberVan = Utilite.GetNumberInRange(lowerLimit, upperLimit);
 
-            structure.Add(new Van (vans[numberVan].Name, vans[numberVan].SeatsCount));
+            structure.Add(new Van(vans[numberVan].Name, vans[numberVan].SeatsCount));
             Console.WriteLine("Вы добавили новый вагон");
         }
 
@@ -274,14 +271,14 @@ namespace DepoOOP
 
                 if (int.TryParse(userInput, out enterNumber) == false)
                     Console.WriteLine("Не корректный ввод.");
-                else if (IsGoBeyondLimit(enterNumber, lowerLimitRangeNumbers, upperLimitRangeNumbers))
+                else if (IsInRange(enterNumber, lowerLimitRangeNumbers, upperLimitRangeNumbers))
                     isEnterNumber = false;
             }
 
             return enterNumber;
         }
 
-        private static bool IsGoBeyondLimit(int number, int lowerLimitRangeNumbers, int upperLimitRangeNumbers)
+        private static bool IsInRange(int number, int lowerLimitRangeNumbers, int upperLimitRangeNumbers)
         {
             if (number < lowerLimitRangeNumbers)
             {
